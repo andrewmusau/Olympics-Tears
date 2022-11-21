@@ -17,7 +17,7 @@ foreach var of varlist FEMALE PREVGOLD LONDON MEDCER CONTINENT WHEN HIGHLIGHTS{
 	drop  `=lower("`var'")'
 }
 //CREATE CORRELATION TABLE IN PAPER (TABLE 3)
-*ssc install estout replace // DELETE ASTERISK IF NOT INSTALLED
+*ssc install estout, replace // DELETE ASTERISK IF NOT INSTALLED
 capture program drop mkcorrlbls
 program define mkcorrlbls, rclass
     local vars: coleq e(b)
