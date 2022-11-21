@@ -4,7 +4,7 @@
 The enclosed dataset is named **Olympics_tears.xls** (Microsoft Excel file format) and the codes that reproduce the results in the paper are in the Stata do-file **Olympics_tears.do**. You need Stata Version 16 or later to run the do-file. The following are variables in the dataset and their descriptions:
 
 * *CRIED*  -	Indicator for cried    
-* *TIMECRIED*  -	Time in seconds when the athlete starts crying (from end of compatition or start of medal ceremony)
+* *TIMECRIED*  -	Time in seconds when the athlete starts crying (from end of competition or start of medal ceremony)
 * *AGE* -	Age of athlete, including the fractional part, as at the opening ceremony
 * *FEMALE* - Indicator for female
 * *SPORT* -	Olympic sport discipline
