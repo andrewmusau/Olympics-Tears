@@ -1,4 +1,4 @@
-import excel "C:\Users\amus\Desktop\Alex New\Olympics_data.xls", sheet("Data") firstrow clear
+import excel "Olympics_data.xls", sheet("Data") firstrow clear
 //DEFINE VALUE LABELS
 lab define female 0 "Male" 1 "Female"
 lab define prevgold 0 "none" 1 "One or more"
