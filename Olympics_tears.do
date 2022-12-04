@@ -12,9 +12,9 @@ lab define highlights 0 "Full coverage" 1 "Highlights"
 
 //ENCODE STRING VARIABLES SPECIFYING VALUE LABELS
 foreach var of varlist FEMALE PREVGOLD LONDON MEDCER CONTINENT WHEN HIGHLIGHTS{
-	rename `var' `=lower("`var'")'
+    rename `var' `=lower("`var'")'
     encode  `=lower("`var'")', g(`var') label( `=lower("`var'")')
-	drop  `=lower("`var'")'
+    drop  `=lower("`var'")'
 }
 //CREATE CORRELATION TABLE IN PAPER (TABLE 3)
 *ssc install estout, replace // DELETE ASTERISK IF NOT INSTALLED
@@ -69,41 +69,45 @@ est sto m6
 //THE RESULTING RTF FILE NEEDS ADDITIONAL FORMATTING
 local hook "\deflang1033\plain\fs24"
 local pfmt "\paperw15840\paperh12240\landscape" // US letter
-esttab m* using table4.rtf, replace b(3) aux(p) nobaselevels nostar wide subs(N_AM "N AM" S_AM "S AM" (.) "" "`hook'" "`hook'`pfmt'" (0.000) "{\i p} < .001" (0. "{\i p} = . " ) "" 0.000 "") 
+esttab m* using table4.rtf, replace b(3) aux(p) nobaselevels nostar wide ///
+subs(N_AM "N AM" S_AM "S AM" (.) "" "`hook'" "`hook'`pfmt'" (0.000) "{\i p} < .001" (0. "{\i p} = . " ) "" 0.000 "") 
 
 //ESTIMATIONS FOR TABLE 5 IN PAPER
 
 //TIMECRIED IS RIGHT CENSORED (0/ MISSING). REPLACE MISSING WITH MAXIMUM OBSERVED DURATION + 1 SECOND FOR TOBIT
 qui sum TIMECRIED
 replace TIMECRIED= int(`r(max)')+ 1 if missing(TIMECRIED)
+local ul= int(`r(max)')+ 1
 
-eststo k1: tobit TIMECRIED AGE FEMALE PREVGOLD DOPED LONDON MEDCER HOST LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA, vce(cluster MED_ID) ul(109)
+eststo k1: tobit TIMECRIED AGE FEMALE PREVGOLD DOPED LONDON MEDCER HOST LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA, vce(cluster MED_ID) ul(`ul')
 
-eststo k2: tobit TIMECRIED AGE PREVGOLD DOPED LONDON MEDCER HOST LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA if FEMALE, vce(cluster MED_ID) ul(109)
+eststo k2: tobit TIMECRIED AGE PREVGOLD DOPED LONDON MEDCER HOST LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA if FEMALE, vce(cluster MED_ID) ul(`ul')
 
-eststo k3: tobit TIMECRIED AGE PREVGOLD DOPED LONDON MEDCER HOST LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA if !FEMALE, vce(cluster MED_ID) ul(109)
+eststo k3: tobit TIMECRIED AGE PREVGOLD DOPED LONDON MEDCER HOST LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA if !FEMALE, vce(cluster MED_ID)  ul(`ul')
 
-eststo k4: tobit TIMECRIED  AGE FEMALE PREVGOLD DOPED LONDON HOST LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA i.WHEN if !MEDCER, ul(109)
+eststo k4: tobit TIMECRIED  AGE FEMALE PREVGOLD DOPED LONDON HOST LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA i.WHEN if !MEDCER,  ul(`ul')
 
-eststo k5: tobit TIMECRIED  AGE FEMALE PREVGOLD DOPED LONDON HOST LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA i.WHEN HIGHLIGHTS if !MEDCER, ul(109)
+eststo k5: tobit TIMECRIED  AGE FEMALE PREVGOLD DOPED LONDON HOST LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA i.WHEN HIGHLIGHTS if !MEDCER,  ul(`ul')
 
-eststo k6: tobit TIMECRIED AGE FEMALE PREVGOLD DOPED LONDON HOST CRIEDEND LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA if MEDCER, ul(109)
+eststo k6: tobit TIMECRIED AGE FEMALE PREVGOLD DOPED LONDON HOST CRIEDEND LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA if MEDCER,  ul(`ul')
 
 //THE RESULTING RTF FILE NEEDS ADDITIONAL FORMATTING
 local hook "\deflang1033\plain\fs24"
 local pfmt "\paperw15840\paperh12240\landscape" // US letter
-esttab k* using table5.rtf, replace b(2)  aux(p 3) nobaselevels nostar wide subs(N_AM "N AM" S_AM "S AM" (.) "" "`hook'" "`hook'`pfmt'" (0.000) "{\i p} < .001" (0. "{\i p} = . " ) "" 0.000 "")  eqlabel(none) mlabel(none) keep(TIMECRIED:) coeflabel(_cons "Intercept")
+esttab k* using table5.rtf, replace b(2)  aux(p 3) nobaselevels nostar wide ///
+subs(N_AM "N AM" S_AM "S AM" (.) "" "`hook'" "`hook'`pfmt'" (0.000) "{\i p} < .001" (0. "{\i p} = . " ) "" 0.000 "") ///
+eqlabel(none) mlabel(none) keep(TIMECRIED:) coeflabel(_cons "Intercept")
 
 //FIGURE 1
 preserve
 local j 1
 forval i=1/6{
-	count if !FEMALE & CONTINENT==`i'
+    count if !FEMALE & CONTINENT==`i'
     local n`j'= `r(N)'
-	local++j
+    local++j
     count if FEMALE & CONTINENT==`i'
     local n`j'= `r(N)'
-	local ++j
+    local ++j
 }
 bys CONTINENT FEMALE: egen percent=total(CRIED)
 bys CONTINENT FEMALE: replace percent= (percent/_N)*100
@@ -113,17 +117,19 @@ separate percent, by(FEMALE) veryshortlabel
 
 //DEFINE BAR LABEL POSITIONS IN GRAPH
 foreach i of numlist 1 2 11 12{
-local pos`i'= `n`i''
+    local pos`i'= `n`i''
 }
 forval i=3/8{
-local pos`i'= `n`=`i'+2''
-di "`pos`i''"
+    local pos`i'= `n`=`i'+2''
 }
 forval i=9/10{
-local pos`i'= `n`=`i'-6''
+    local pos`i'= `n`=`i'-6''
 }
 
-gr bar percent?, over(CONTINENT, sort(1)) ytitle("") ysc(r(., 55) lstyle(none)) ylabel(,nogrid) scheme(s1mono) bar(1, blcolor(black) bfcolor(black*0.3)) bar(2, blcolor(navy) bfcolor(navy*0.3)) blab(total, format(%2.0f) size(vsmall)) ytitle("Percent") leg(order(1 "Male" 2 "Female") position(11) nobox region(lstyle(none)) cols(1) ring(0)bplacement(nw)) ysc(off)
+gr bar percent?, over(CONTINENT, sort(1)) ytitle("") ysc(r(., 55) lstyle(none)) ///
+ylabel(,nogrid) scheme(s1mono) bar(1, blcolor(black) bfcolor(black*0.3)) bar(2, blcolor(navy) bfcolor(navy*0.3)) ///
+blab(total, format(%2.0f) size(vsmall)) ytitle("Percent") leg(order(1 "Male" 2 "Female") position(11) nobox ///
+region(lstyle(none)) cols(1) ring(0)bplacement(nw)) ysc(off)
 
 local nb=`.Graph.plotregion1.barlabels.arrnels'
 forval i=1/`nb' {
@@ -152,5 +158,5 @@ local hook "\deflang1033\plain\fs24"
 local pfmt "\paperw15840\paperh12240\landscape" // US letter
 estpost tabstat EF LF RF LFPF LFPM SPW Gold CriedEnd CriedMed, by(COUNTRY)
 esttab . using table1.rtf, replace cells("EF LF RF LFPF LFPM SPW Gold CriedEnd CriedMed") ///
-    noobs nomtitle nonumber varlabels(`e(labels)') varwidth(30) collab(, lhs("Country")) ///
-	    drop(Total) subs("`hook'" "`hook'`pfmt'") 
+noobs nomtitle nonumber varlabels(`e(labels)') varwidth(30) collab(, lhs("Country")) ///
+drop(Total) subs("`hook'" "`hook'`pfmt'") 
