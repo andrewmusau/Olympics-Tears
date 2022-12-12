@@ -5,6 +5,7 @@ lab define prevgold 0 "none" 1 "One or more"
 lab define london 0 "Rio 2016" 1 "London 2012"
 lab define medcer 0  "cried_end" 1 "cried_med"
 lab define continent 1 "Africa" 2 "Asia" 3 "Europe" 4 "N. America" 5 "Oceania" 6 "S. America"
+rename (continent med_id) (CONTINENT MED_ID)
 replace CONTINENT= "N. America" if CONTINENT== "North America"
 replace CONTINENT= "S. America" if CONTINENT== "South America"
 lab define when 0 "before end of event" 1 "at end of event" 2 "after end of event"
