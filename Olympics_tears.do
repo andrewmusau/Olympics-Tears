@@ -39,7 +39,7 @@ esttab . using corrtable.txt, replace b(3) unstack nonum nomtitle not noobs comp
 
 //ESTIMATIONS FOR TABLE 4 IN PAPER
 qui logit CRIED AGE FEMALE PREVGOLD DOPED LONDON MEDCER HOST LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA, cluster(MED_ID)
-g sample = e(sample)
+gen sample = e(sample)
 margins, dydx(*) post
 est sto m1
 qui logit CRIED AGE PREVGOLD DOPED LONDON MEDCER HOST LGDPC EF LF RF LFPF LFPM SPW AFRICA ASIA N_AMERICA OCEANIA S_AMERICA if FEMALE, cluster(MED_ID)
@@ -62,6 +62,7 @@ local hook "\deflang1033\plain\fs24"
 local pfmt "\paperw15840\paperh12240\landscape" // US letter
 esttab m* using table4.rtf, replace b(3) aux(p) nobaselevels nostar wide ///
 subs(N_AM "N AM" S_AM "S AM" (.) "" "`hook'" "`hook'`pfmt'" (0.000) "{\i p} < .001" (0. "{\i p} = . " ) "" 0.000 "") 
+estimates clear
 
 //ESTIMATIONS FOR TABLE 5 IN PAPER
 //TIMECRIED IS RIGHT CENSORED (CONTINUOUS/ MISSING). REPLACE MISSING WITH MAXIMUM OBSERVED DURATION + 1 SECOND FOR TOBIT
@@ -80,6 +81,7 @@ local pfmt "\paperw15840\paperh12240\landscape" // US letter
 esttab k* using table5.rtf, replace b(2)  aux(p 3) nobaselevels nostar wide ///
 subs(N_AM "N AM" S_AM "S AM" (.) "" "`hook'" "`hook'`pfmt'" (0.000) "{\i p} < .001" (0. "{\i p} = . " ) "" 0.000 "") ///
 eqlabel(none) mlabel(none) keep(TIMECRIED:) coeflabel(_cons "Intercept")
+estimates clear
 
 //FIGURE 1
 preserve
@@ -137,3 +139,4 @@ estpost tabstat EF LF RF LFPF LFPM SPW Gold CriedEnd CriedMed, by(COUNTRY)
 esttab . using table1.rtf, replace cells("EF LF RF LFPF LFPM SPW Gold CriedEnd CriedMed") ///
 noobs nomtitle nonumber varlabels(`e(labels)') varwidth(30) collab(, lhs("Country")) ///
 drop(Total) subs("`hook'" "`hook'`pfmt'") 
+restore
